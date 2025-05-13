@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: status-service
+  namespace: microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: status-service
+  template:
+    metadata:
+      labels:
+        app: status-service
+    spec:
+      containers:
+      - name: status-service
+        image: pyroborn/status-service:latest
+        ports:
+        - containerPort: 4001
+        envFrom:
+        - configMapRef:
+            name: service-env
+        env:
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_USER
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_PASSWORD
+        - name: RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_USER
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: status-service
+  namespace: microservices
+spec:
+  selector:
+    app: status-service
+  ports:
+  - port: 4001
+    targetPort: 4001 

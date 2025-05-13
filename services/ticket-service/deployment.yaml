@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticket-service
+  namespace: microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ticket-service
+  template:
+    metadata:
+      labels:
+        app: ticket-service
+    spec:
+      containers:
+      - name: ticket-service
+        image: pyroborn/ticket-service:latest
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: service-env
+        env:
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_USER
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_PASSWORD
+        - name: RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_USER
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_PASSWORD
+        volumeMounts:
+        - name: static-files
+          mountPath: /app/public
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: static-files
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+      volumes:
+      - name: static-files
+        emptyDir: {}
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ticket-service
+  namespace: microservices
+spec:
+  selector:
+    app: ticket-service
+  ports:
+  - name: api
+    port: 3000
+    targetPort: 3000
+  - name: static
+    port: 80
+    targetPort: 80
+  type: NodePort 

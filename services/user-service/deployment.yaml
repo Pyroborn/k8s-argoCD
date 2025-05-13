@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: pyroborn/user-service:latest
+        ports:
+        - containerPort: 3003
+        envFrom:
+        - configMapRef:
+            name: service-env
+        env:
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_USER
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_PASSWORD
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: MINIO_ACCESS_KEY
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: MINIO_SECRET_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: microservices
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 3003
+    targetPort: 3003 

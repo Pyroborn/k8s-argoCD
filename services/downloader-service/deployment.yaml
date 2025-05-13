@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: downloader-service
+  namespace: microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: downloader-service
+  template:
+    metadata:
+      labels:
+        app: downloader-service
+    spec:
+      containers:
+      - name: downloader-service
+        image: pyroborn/downloader-service:latest
+        ports:
+        - containerPort: 3004
+        envFrom:
+        - configMapRef:
+            name: service-env
+        env:
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_USER
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: MONGODB_PASSWORD
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: MINIO_ACCESS_KEY
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: MINIO_SECRET_KEY
+        - name: RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_USER
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: downloader-service
+  namespace: microservices
+spec:
+  selector:
+    app: downloader-service
+  ports:
+  - port: 3004
+    targetPort: 3004 

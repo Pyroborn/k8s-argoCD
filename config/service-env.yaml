@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-env
+  namespace: microservices
+data:
+  MONGODB_URI: "mongodb://mongodb:27017"
+  RABBITMQ_URL: "amqp://rabbitmq:5672"
+  MINIO_ENDPOINT: "http://minio:9000"
+  MINIO_BUCKET: "files"
+  STATUS_SERVICE_URL: "http://status-service:4001"
+  USER_SERVICE_URL: "http://user-service:3003"
+  DOWNLOADER_SERVICE_URL: "http://downloader-service:3004" 
