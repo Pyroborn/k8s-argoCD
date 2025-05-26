@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-ingress
+  namespace: microservices
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # Add authorization header with API key to service-to-service requests
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Authorization "ApiKey ${SERVICE_API_KEY}";
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: 209.182.239.81.nip.io # Use your desired domain or IP
+    http:
+      paths:
+      - path: /api/tickets(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: ticket-service
+            port:
+              number: 3005
+      - path: /api/status(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: status-service
+            port:
+              number: 4001
+      - path: /api/users(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: user-service
+            port:
+              number: 3003
+      - path: /api/files(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: downloader-service
+            port:
+              number: 3004
+      - path: /(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: ticket-service
+            port:
+              number: 3005

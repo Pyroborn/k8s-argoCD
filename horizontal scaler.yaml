@@ -1,0 +1,8 @@
+metrics:
+- type: External
+  external:
+    metric:
+      name: rabbitmq_queue_size
+    target:
+      type: AverageValue
+      averageValue: 10

@@ -16,12 +16,25 @@ spec:
       containers:
       - name: status-service
         image: pyroborn/status-service:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4001
         envFrom:
         - configMapRef:
             name: service-env
+        - configMapRef:
+            name: status-service-config
         env:
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: JWT_SECRET
+        - name: SERVICE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: service-api-keys
+              key: SERVICE_API_KEY
         - name: MONGODB_USER
           valueFrom:
             secretKeyRef:
@@ -42,6 +55,23 @@ spec:
             secretKeyRef:
               name: rabbitmq-credentials
               key: RABBITMQ_PASSWORD
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 4001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 4001
 ---
 apiVersion: v1
 kind: Service
@@ -53,4 +83,7 @@ spec:
     app: status-service
   ports:
   - port: 4001
-    targetPort: 4001 
+    targetPort: 4001
+    protocol: TCP
+    name: http
+  type: ClusterIP

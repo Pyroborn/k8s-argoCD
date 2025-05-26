@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shared-env
+  namespace: microservices
+data:
+  # Service URLs for Kubernetes environment
+  STATUS_SERVICE_URL: "http://status-service:4001"
+  USER_SERVICE_URL: "http://user-service:3003"
+  DOWNLOADER_SERVICE_URL: "http://downloader-service:3004"
+  TICKET_SERVICE_URL: "http://ticket-service:3005"
+  # Dependency environment variables
+  MONGODB_HOST: "mongodb"
+  MONGODB_PORT: "27017"
+  RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_PORT: "5672"
+  MINIO_HOST: "minio"
+  MINIO_PORT: "9000"
+  RABBITMQ_URL: "amqp://rabbitmq:5672"
+  ## MONGODB_URI: "mongodb://mongodb:27017"
+  ## MONGODB_DATABASE: "microservices"
+  MINIO_ENDPOINT: "http://minio:9000"
+  # CORS Settings
+  ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://status-service:4001,http://user-service:3003,http://downloader-service:3004,http://ticket-service:3005"
+  CORS_METHODS: "GET,POST,PUT,DELETE,OPTIONS"
+  CORS_HEADERS: "Content-Type,Authorization,X-Requested-With"
+  CORS_CREDENTIALS: "true"
+  # Environment Type
+  NODE_ENV: "production"
+  IS_LOCAL: "false" 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: downloader-service-config
+  namespace: microservices
+data:
+  PORT: "3004"
+  MINIO_BUCKET: "files"
+  USE_SSL: "false"
+  RABBITMQ_QUEUE_UPLOAD: "file_upload_queue"
+  RABBITMQ_QUEUE_DOWNLOAD: "file_download_queue"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ticket-service-config
+  namespace: microservices
+data:
+  LOG_LEVEL: "info"
+  PORT: "3005"
+  MONGODB_URI: "mongodb://mongodb:27017/ticket-service"
+  MONGODB_DATABASE: "ticket-service"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+  namespace: microservices
+data:
+  PORT: "3003"
+  DATA_DIR: "./data"
+  USER_DB_PATH: "./data/users.json"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: status-service-config
+  namespace: microservices
+data:
+  PORT: "4001"
+  LOG_LEVEL: "info"
+  MONGODB_URI: "mongodb://mongodb:27017/status-service"
+  MONGODB_DATABASE: "status-service"
+  ##"amqp://rabbitmq-service:5672"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-config
+  namespace: microservices
+data:
+  api-key-config: |
+    proxy_set_header Authorization "ApiKey ${SERVICE_API_KEY}";
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: microservices
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/ /index.html;
+            expires 30d;
+            add_header Cache-Control "public, no-transform";
+        }
+
+        location /api {
+            proxy_pass http://localhost:3005;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
