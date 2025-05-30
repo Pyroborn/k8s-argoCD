@@ -62,10 +62,10 @@ spec:
           periodSeconds: 20
           failureThreshold: 3
           timeoutSeconds: 5
-volumes:
-- name: minio-data
-  persistentVolumeClaim:
-    claimName: minio-pvc
+      volumes:
+      - name: minio-data
+        persistentVolumeClaim:
+          claimName: minio-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
