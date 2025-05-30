@@ -15,4 +15,4 @@ resources:
   - deployments/status-service/
   - deployments/user-service/
   - deployments/ticket-service/
-  - secrets/
+  ##- secrets/
