@@ -21,17 +21,17 @@ spec:
         - /data
         - --console-address
         - ":9001"
-        env:
-        - name: MINIO_ROOT_USER
-          valueFrom:
-            secretKeyRef:
-              name: minio-credentials
-              key: MINIO_ROOT_USER
-        - name: MINIO_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: minio-credentials
-              key: MINIO_ROOT_PASSWORD
+        volumeMounts:
+        - name: minio-data
+          mountPath: /data
+        - name: minio-creds
+          mountPath: /access_key
+          subPath: access_key
+          readOnly: true
+        - name: minio-creds
+          mountPath: /secret_key
+          subPath: secret_key
+          readOnly: true
         ports:
         - containerPort: 9000
         - containerPort: 9001
@@ -42,9 +42,6 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "1"
-        volumeMounts:
-        - name: minio-data
-          mountPath: /data
         readinessProbe:
           httpGet:
             path: /minio/health/ready
@@ -66,6 +63,14 @@ spec:
       - name: minio-data
         persistentVolumeClaim:
           claimName: minio-pvc
+      - name: minio-creds
+        secret:
+          secretName: minio-credentials
+          items:
+          - key: MINIO_ROOT_USER
+            path: access_key
+          - key: MINIO_ROOT_PASSWORD 
+            path: secret_key
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
