@@ -32,10 +32,6 @@ spec:
             secretKeyRef:
               name: minio-credentials
               key: MINIO_ROOT_PASSWORD
-        - name: MINIO_ROOT_USER_FILE
-          value: ""
-        - name: MINIO_ROOT_PASSWORD_FILE
-          value: ""
         ports:
         - containerPort: 9000
         - containerPort: 9001
@@ -86,7 +82,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: minio-clusterip
+  name: minio
   namespace: microservices
 spec:
   selector:
@@ -97,7 +93,8 @@ spec:
     targetPort: 9000
   - name: console
     port: 9001
-    targetPort: 9001 
+    targetPort: 9001
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
