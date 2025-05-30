@@ -32,6 +32,10 @@ spec:
             secretKeyRef:
               name: minio-credentials
               key: MINIO_SECRET_KEY
+        - name: MINIO_ROOT_USER_FILE
+          value: ""
+        - name: MINIO_ROOT_PASSWORD_FILE
+          value: ""
         ports:
         - containerPort: 9000
         - containerPort: 9001
