@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - ingress.yaml
+  - ingressclass.yaml
+  - horizontal-scaler.yaml
+
+  # Include all manifests from these folders
+  - configmaps/
+  - dependencies/
+  - deployments/
+  - deployments/downloader-service/
+  - deployments/status-service/
+  - deployments/user-service/
+  - deployments/ticket-service/
+  - secrets/
