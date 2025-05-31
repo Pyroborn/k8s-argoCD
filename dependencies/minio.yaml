@@ -20,7 +20,7 @@ spec:
         - server
         - /data
         - --console-address
-        - ":9001"
+        - ":9000"
         env:
         - name: MINIO_ROOT_USER_FILE
           value: /access_key
