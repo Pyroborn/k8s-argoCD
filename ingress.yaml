@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: microservices-ingress
+  name: api-ingress
   namespace: microservices
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -10,10 +10,6 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    #nginx.ingress.kubernetes.io/configuration-snippet: |
-    #  proxy_set_header Authorization "ApiKey ${SERVICE_API_KEY}";
-    #  proxy_set_header Upgrade $http_upgrade;
-    #  proxy_set_header Connection $connection_upgrade;
 spec:
   ingressClassName: nginx
   rules:
@@ -48,13 +44,6 @@ spec:
             name: downloader-service
             port:
               number: 3004
-      - path: /(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: ticket-service
-            port:
-              number: 3005
       - path: /minio(/|$)(.*)
         pathType: Prefix
         backend:
@@ -62,6 +51,28 @@ spec:
             name: minio
             port:
               number: 9001
+      - path: /(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: ticket-service
+            port:
+              number: 3005
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-console-ingress
+  namespace: microservices
+  annotations:
+    # No rewrite-target here
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
   - host: minio.209.182.239.81.nip.io
     http:
       paths:
@@ -72,7 +83,21 @@ spec:
             name: minio
             port:
               number: 9001
-
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-api-ingress
+  namespace: microservices
+  annotations:
+    # No rewrite-target here
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
   - host: minio-api.209.182.239.81.nip.io
     http:
       paths:
