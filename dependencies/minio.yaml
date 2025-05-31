@@ -26,6 +26,8 @@ spec:
           value: /access_key
         - name: MINIO_ROOT_PASSWORD_FILE
           value: /secret_key
+        - name: MINIO_BROWSER_REDIRECT_URL
+          value: 209.182.239.81:8084
         volumeMounts:
         - name: minio-data
           mountPath: /data
