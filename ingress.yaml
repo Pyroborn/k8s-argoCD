@@ -55,7 +55,13 @@ spec:
             name: ticket-service
             port:
               number: 3005
-
+      - path: /minio(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              number: 9001
   - host: minio.209.182.239.81.nip.io
     http:
       paths:
