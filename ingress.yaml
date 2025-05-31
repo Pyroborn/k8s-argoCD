@@ -69,8 +69,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-    - host: minio.local
-      http:
+    - http:
         paths:
           - path: /minio-api(/|$)(.*)
             pathType: ImplementationSpecific
@@ -79,9 +78,6 @@ spec:
                 name: minio
                 port:
                   number: 9000
-    - host: console.minio.local
-      http:
-        paths:
           - path: /minio(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
