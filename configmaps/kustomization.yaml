@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - configmaps.yaml
   - nginx-config.yaml
+  - nginx-ingress-config.yaml

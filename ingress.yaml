@@ -18,7 +18,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: microservices.local  # Change to your actual domain or use a nip.io address
+  - host: 209.182.239.81.nip.io  # Change to your actual domain or use a nip.io address
     http:
       paths:
       - path: /api/tickets(/|$)(.*)
@@ -76,7 +76,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: microservices.local  # Change to your actual domain or use a nip.io address
+    - host: 209.182.239.81.nip.io  # Change to your actual domain or use a nip.io address
       http:
         paths:
           - path: /minio-api(/|$)(.*)
