@@ -76,8 +76,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: 209.182.239.81.nip.io  # Change to your actual domain or use a nip.io address
-      http:
+    #- host: 209.182.239.81.nip.io  # Change to your actual domain or use a nip.io address
+    - http:
         paths:
           - path: /minio-api(/|$)(.*)
             pathType: ImplementationSpecific
