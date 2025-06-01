@@ -10,10 +10,15 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # Adding service-to-service auth using a custom header
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Host $host;
 spec:
   ingressClassName: nginx
   rules:
-  - host: 209.182.239.81.nip.io
+  - host: microservices.local  # Change to your actual domain or use a nip.io address
     http:
       paths:
       - path: /api/tickets(/|$)(.*)
@@ -63,13 +68,16 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: minio-ingress
+  namespace: microservices
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
-    - http:
+    - host: microservices.local  # Change to your actual domain or use a nip.io address
+      http:
         paths:
           - path: /minio-api(/|$)(.*)
             pathType: ImplementationSpecific

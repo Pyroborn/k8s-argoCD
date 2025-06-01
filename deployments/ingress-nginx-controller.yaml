@@ -22,12 +22,6 @@ spec:
         - --election-id=ingress-controller-leader
         - --ingress-class=nginx
         - --configmap=microservices/nginx-ingress-config
-        env:
-        - name: SERVICE_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: service-api-keys
-              key: SERVICE_API_KEY
         ports:
         - name: http
           containerPort: 80

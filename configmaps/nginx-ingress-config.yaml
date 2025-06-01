@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-config
+  namespace: microservices
+data:
+  proxy-connect-timeout: "10"
+  proxy-read-timeout: "3600"
+  proxy-send-timeout: "3600"
+  proxy-body-size: "50m"
+  client-max-body-size: "50m"
+  keep-alive: "75"
+  keep-alive-requests: "100"
+  proxy-buffer-size: "8k"
+  enable-underscores-in-headers: "true"
+  # Enable CORS for development
+  enable-cors: "true"
+  cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,X-User-Id"
+  cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+  cors-allow-origin: "*" 
