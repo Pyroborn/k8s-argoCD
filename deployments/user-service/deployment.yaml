@@ -14,8 +14,7 @@ spec:
         app: user-service
     spec:
       containers:
-      - name: user-service
-        image: pyroborn/user-service:latest
+      - image: pyroborn/user-service:25
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3003
