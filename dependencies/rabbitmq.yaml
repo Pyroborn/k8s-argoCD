@@ -34,15 +34,14 @@ spec:
           httpGet:
             path: /api/healthchecks/node
             port: 15672
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
-
         livenessProbe:
           httpGet:
             path: /api/healthchecks/node
             port: 15672
-          initialDelaySeconds: 20
+          initialDelaySeconds: 60
           periodSeconds: 20
           timeoutSeconds: 5
         resources:
@@ -55,10 +54,10 @@ spec:
         volumeMounts:
         - name: rabbitmq-data
           mountPath: /var/lib/rabbitmq
-  volumes:
-  - name: rabbitmq-data
-    persistentVolumeClaim:
-      claimName: rabbitmq-pvc
+      volumes:
+      - name: rabbitmq-data
+        persistentVolumeClaim:
+          claimName: rabbitmq-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
