@@ -31,8 +31,8 @@ spec:
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
-              name: microservice-secrets
-              key: jwt-secret
+              name: jwt-secret
+              key: JWT_SECRET
         - name: SERVICE_API_KEY
           valueFrom:
             secretKeyRef:
