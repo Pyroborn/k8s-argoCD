@@ -37,22 +37,15 @@ spec:
             memory: "1Gi"
             cpu: "500m"
         readinessProbe:
-          exec:
-            command:
-            - mongo
-            - --eval
-            - "db.adminCommand('ping')"
+          tcpSocket:
+            port: 27017
           initialDelaySeconds: 10
           periodSeconds: 10
         livenessProbe:
-          exec:
-            command:
-            - mongo
-            - --eval
-            - "db.adminCommand('ping')"
+          tcpSocket:
+            port: 27017
           initialDelaySeconds: 20
           periodSeconds: 20
-
         volumeMounts:
         - name: mongodb-data
           mountPath: /data/db
