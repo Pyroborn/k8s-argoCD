@@ -39,12 +39,12 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 27017
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
             port: 27017
-          initialDelaySeconds: 20
+          initialDelaySeconds: 60
           periodSeconds: 20
         volumeMounts:
         - name: mongodb-data
