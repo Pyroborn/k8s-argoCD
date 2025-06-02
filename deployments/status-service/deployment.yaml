@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: status-service
-        image: pyroborn/status-service:latest
+        image: pyroborn/status-service:debug
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4001
@@ -55,6 +55,10 @@ spec:
             secretKeyRef:
               name: rabbitmq-credentials
               key: RABBITMQ_PASSWORD
+        - name: NODE_ENV
+          value: "production"
+        - name: IS_LOCAL
+          value: "false"
         resources:
           limits:
             cpu: "200m"
@@ -72,6 +76,10 @@ spec:
           httpGet:
             path: /health/ready
             port: 4001
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
