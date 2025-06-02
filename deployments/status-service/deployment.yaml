@@ -21,7 +21,7 @@ spec:
         - containerPort: 4001
         envFrom:
         - configMapRef:
-            name: service-env
+            name: shared-env
         - configMapRef:
             name: status-service-config
         env:
