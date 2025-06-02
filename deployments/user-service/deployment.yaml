@@ -21,7 +21,8 @@ spec:
         - containerPort: 3003
         volumeMounts:
         - name: user-data
-          mountPath: /app/data
+          mountPath: /app/data/users.json
+          subPath: users.json
         envFrom:
         - configMapRef:
             name: shared-env
@@ -59,8 +60,8 @@ spec:
           periodSeconds: 5
       volumes:
       - name: user-data
-        persistentVolumeClaim:
-          claimName: user-data-pvc
+        configMap:
+          name: user-data-config
 ---
 apiVersion: v1
 kind: Service
