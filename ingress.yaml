@@ -10,11 +10,6 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      location ~* \.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
-      }
 spec:
   ingressClassName: nginx
   rules:
@@ -56,21 +51,22 @@ spec:
             name: minio
             port:
               number: 9001
-      - path: /(css/.+)
+      # Specific static file handling
+      - path: /css/(.*)
         pathType: Prefix
         backend:
           service:
             name: ticket-service
             port:
               number: 80
-      - path: /(js/.+)
+      - path: /js/(.*)
         pathType: Prefix
         backend:
           service:
             name: ticket-service
             port:
               number: 80
-      - path: /(images/.+)
+      - path: /images/(.*)
         pathType: Prefix
         backend:
           service:
