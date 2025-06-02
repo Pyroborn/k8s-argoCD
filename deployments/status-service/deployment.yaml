@@ -35,16 +35,16 @@ spec:
             secretKeyRef:
               name: service-api-keys
               key: SERVICE_API_KEY
-        - name: MONGODB_USER
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-credentials
-              key: MONGODB_USER
-        - name: MONGODB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-credentials
-              key: MONGODB_PASSWORD
+        #- name: MONGODB_USER
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: mongodb-credentials
+        #      key: MONGODB_USER
+        #- name: MONGODB_PASSWORD
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: mongodb-credentials
+        #      key: MONGODB_PASSWORD
         - name: RABBITMQ_USER
           valueFrom:
             secretKeyRef:
