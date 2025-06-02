@@ -72,6 +72,8 @@ data:
   LOG_LEVEL: "info"
   MONGODB_URI: "mongodb://mongodb:27017/status-service"
   MONGODB_DATABASE: "status-service"
+  MONGODB_HOST: "mongodb"
+  MONGODB_PORT: "27017"
   ##"amqp://rabbitmq-service:5672"
 ---
 ##apiVersion: v1
