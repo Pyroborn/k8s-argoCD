@@ -72,6 +72,9 @@ data:
             root /usr/share/nginx/html;
             try_files $uri $uri/ /index.html;
             
+            # Include mime types
+            include /etc/nginx/mime.types;
+            
             # Caching configuration
             expires 30d;
             add_header Cache-Control "public, max-age=2592000, immutable";
@@ -83,6 +86,24 @@ data:
             gzip_min_length 1000;
             gzip_vary on;
             gzip_proxied any;
+        }
+
+        # Explicit handling for JavaScript files
+        location ~* \.js$ {
+            root /usr/share/nginx/html;
+            try_files $uri =404;
+            types { application/javascript js; }
+            expires 30d;
+            add_header Cache-Control "public, max-age=2592000, immutable";
+        }
+
+        # Explicit handling for CSS files
+        location ~* \.css$ {
+            root /usr/share/nginx/html;
+            try_files $uri =404;
+            types { text/css css; }
+            expires 30d;
+            add_header Cache-Control "public, max-age=2592000, immutable";
         }
 
         # Proxy API requests to the Node.js service
