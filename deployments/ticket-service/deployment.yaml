@@ -87,6 +87,9 @@ spec:
           readOnly: true
         - name: nginx-config
           mountPath: /etc/nginx/conf.d
+        - name: nginx-main-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
         resources:
           limits:
             cpu: "200m"
@@ -106,6 +109,15 @@ spec:
       - name: nginx-config
         configMap:
           name: nginx-config
+          items:
+          - key: default.conf
+            path: default.conf
+      - name: nginx-main-config
+        configMap:
+          name: nginx-config
+          items:
+          - key: nginx.conf
+            path: nginx.conf
 ---
 apiVersion: v1
 kind: Service
