@@ -21,8 +21,7 @@ spec:
         - containerPort: 3003
         volumeMounts:
         - name: user-data
-          mountPath: /app/data/users.json
-          subPath: users.json
+          mountPath: /app/data
         envFrom:
         - configMapRef:
             name: shared-env
@@ -60,8 +59,8 @@ spec:
           periodSeconds: 5
       volumes:
       - name: user-data
-        configMap:
-          name: user-data-config
+        persistentVolumeClaim:
+          claimName: user-data-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -77,3 +76,52 @@ spec:
     protocol: TCP
     name: http
   type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-data-pvc
+  namespace: microservices
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-user-data
+  namespace: microservices
+spec:
+  template:
+    spec:
+      containers:
+      - name: init-container
+        image: busybox
+        command: ['/bin/sh', '-c']
+        args:
+        - |
+          if [ ! -f /data/users.json ]; then
+            echo "Copying initial users data..."
+            cp /secret/users.json /data/
+            chmod 666 /data/users.json
+            echo "Done."
+          else
+            echo "users.json already exists, skipping initialization."
+          fi
+        volumeMounts:
+        - name: user-data
+          mountPath: /data
+        - name: initial-users
+          mountPath: /secret
+      volumes:
+      - name: user-data
+        persistentVolumeClaim:
+          claimName: user-data-pvc
+      - name: initial-users
+        secret:
+          secretName: initial-users-data
+      restartPolicy: Never
+  backoffLimit: 3
