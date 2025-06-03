@@ -77,18 +77,6 @@ spec:
     name: http
   type: ClusterIP
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: user-data-pvc
-  namespace: microservices
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
 apiVersion: batch/v1
 kind: Job
 metadata:
