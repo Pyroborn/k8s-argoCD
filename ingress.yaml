@@ -30,12 +30,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ticket-service-ingress
+  name: api-ingress
   namespace: microservices
   annotations:
-    # Don't use path rewriting for the ticket service
-    nginx.ingress.kubernetes.io/rewrite-target: /api/tickets$2
     nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-buffering: "off"
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
