@@ -35,16 +35,16 @@ spec:
         #    secretKeyRef:
         #      name: mongodb-credentials
         #      key: MONGODB_PASSWORD
-        - name: RABBITMQ_USER
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq-credentials
-              key: RABBITMQ_USER
-        - name: RABBITMQ_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq-credentials
-              key: RABBITMQ_PASSWORD
+        #- name: RABBITMQ_USER
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: rabbitmq-credentials
+        #      key: RABBITMQ_USER
+        #- name: RABBITMQ_PASSWORD
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: rabbitmq-credentials
+        #      key: RABBITMQ_PASSWORD
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:

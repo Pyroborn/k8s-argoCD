@@ -29,16 +29,6 @@ spec:
         - configMapRef:
             name: downloader-service-config
         env:
-        - name: MONGODB_USER
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-credentials
-              key: MONGODB_USER
-        - name: MONGODB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-credentials
-              key: MONGODB_PASSWORD
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
@@ -49,16 +39,16 @@ spec:
             secretKeyRef:
               name: minio-credentials
               key: MINIO_SECRET_KEY
-        - name: RABBITMQ_USER
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq-credentials
-              key: RABBITMQ_USER
-        - name: RABBITMQ_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq-credentials
-              key: RABBITMQ_PASSWORD
+        #- name: RABBITMQ_USER
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: rabbitmq-credentials
+        #     key: RABBITMQ_USER
+        #- name: RABBITMQ_PASSWORD
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: rabbitmq-credentials
+        #      key: RABBITMQ_PASSWORD
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
