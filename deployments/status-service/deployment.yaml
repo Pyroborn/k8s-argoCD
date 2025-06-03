@@ -60,7 +60,7 @@ spec:
         - name: IS_LOCAL
           value: "false"
         - name: RABBITMQ_URL
-          value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASSWORD)@$(RABBITMQ_HOST):$(RABBITMQ_PORT)"
+          value: "amqp://$(RABBITMQ_HOST):$(RABBITMQ_PORT)"
         resources:
           limits:
             cpu: "200m"
