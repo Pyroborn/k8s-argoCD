@@ -1,4 +1,4 @@
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: horizontal-scaler
@@ -17,4 +17,4 @@ spec:
         name: rabbitmq_queue_size
       target:
         type: AverageValue
-        averageValue: 10
+        averageValue: "10"
