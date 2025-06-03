@@ -50,7 +50,7 @@ data:
   LOG_LEVEL: "info"
   PORT: "3005"
   MONGODB_URI: "mongodb://mongodb:27017/ticket-service"
-  MONGODB_DATABASE: "ticket-service"
+  #MONGODB_DATABASE: "ticket-service"
 ---
 apiVersion: v1
 kind: ConfigMap

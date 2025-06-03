@@ -25,16 +25,16 @@ spec:
         - configMapRef:
             name: ticket-service-config
         env:
-        - name: MONGODB_USER
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-credentials
-              key: MONGODB_USER
-        - name: MONGODB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-credentials
-              key: MONGODB_PASSWORD
+        #- name: MONGODB_USER
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: mongodb-credentials
+        #      key: MONGODB_USER
+        #- name: MONGODB_PASSWORD
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: mongodb-credentials
+        #      key: MONGODB_PASSWORD
         - name: RABBITMQ_USER
           valueFrom:
             secretKeyRef:
