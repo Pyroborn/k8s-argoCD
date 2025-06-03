@@ -5,7 +5,7 @@ resources:
   - namespace.yaml
   - ingress.yaml
   - ingressclass.yaml
-  - horizontal-scaler.yaml
+  #- horizontal-scaler.yaml
 
   # Include all manifests from these folders
   - configmaps/
