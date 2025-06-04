@@ -61,10 +61,10 @@ spec:
               key: SERVICE_API_KEY
         resources:
           requests:
-            cpu: "10m"
-            memory: "32Mi"
-          limits:
             cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "100m"
             memory: "128Mi"
         livenessProbe:
           httpGet:
