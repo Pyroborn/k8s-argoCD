@@ -40,11 +40,11 @@ spec:
               key: SERVICE_API_KEY
         resources:
           limits:
-            cpu: "200m"
+            cpu: "500m"
             memory: "256Mi"
           requests:
-            cpu: "50m"
-            memory: "64Mi"
+            cpu: "100m"
+            memory: "128Mi"
         livenessProbe:
           httpGet:
             path: /health/live
