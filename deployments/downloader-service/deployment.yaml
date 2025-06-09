@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: downloader-service
-        image: pyroborn/downloader-service:18
+        image: pyroborn/downloader-service:20
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3004
