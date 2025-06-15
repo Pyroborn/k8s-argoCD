@@ -27,17 +27,6 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
-  # Scale based on RabbitMQ queue size (pending downloads)
-  - type: Pods
-    pods:
-      metric:
-        name: rabbitmq_queue_messages_ready
-        selector:
-          matchLabels:
-            queue: download-queue
-      target:
-        type: AverageValue
-        averageValue: "5"
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60
