@@ -1,20 +1,61 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: horizontal-scaler
+  name: downloader-service-hpa
   namespace: microservices
+  labels:
+    app: downloader-service
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: downloader-service
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 3
   metrics:
-  - type: External
-    external:
+  # Scale based on CPU usage (traffic load)
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  # Scale based on memory usage (file processing load)
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  # Scale based on RabbitMQ queue size (pending downloads)
+  - type: Pods
+    pods:
       metric:
-        name: rabbitmq_queue_size
+        name: rabbitmq_queue_messages_ready
+        selector:
+          matchLabels:
+            queue: download-queue
       target:
         type: AverageValue
-        averageValue: "10"
+        averageValue: "5"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+      selectPolicy: Min
