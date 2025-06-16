@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: downloader-service-monitor
+  namespace: microservices
+  labels:
+    app: downloader-service
+    release: prometheus-stack  # This label is important for Prometheus operator
+spec:
+  selector:
+    matchLabels:
+      app: downloader-service
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s 
