@@ -6,3 +6,4 @@ resources:
   - rabbitmq.yaml
   - user-data-pvc.yaml
   - prometheus-adapter.yaml
+  - metrics-server.yaml
