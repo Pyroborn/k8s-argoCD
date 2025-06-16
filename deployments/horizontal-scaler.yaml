@@ -1,4 +1,4 @@
-# HPA using custom metrics from Prometheus
+# Simple HPA using only CPU for testing
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -10,33 +10,15 @@ spec:
     kind: Deployment
     name: downloader-service
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 3
   metrics:
-  # Scale based on request rate
-  - type: Pods
-    pods:
-      metric:
-        name: downloader_requests_per_second
-      target:
-        type: AverageValue
-        averageValue: "5"  # Scale up when > 5 req/sec per pod
-  
-  # Scale based on active operations
-  - type: Pods
-    pods:
-      metric:
-        name: downloader_active_operations
-      target:
-        type: AverageValue
-        averageValue: "3"  # Scale up when > 3 active operations per pod
-  
-  # Fallback CPU scaling
+  # Only CPU scaling for now
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 50
   
   behavior:
     scaleUp:

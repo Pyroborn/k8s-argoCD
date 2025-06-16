@@ -6,6 +6,17 @@ metadata:
 data:
   config.yaml: |
     rules:
+    # Basic CPU metric for testing
+    - seriesQuery: 'up'
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+          pod: {resource: "pod"}
+      name:
+        matches: "up"
+        as: "test_metric"
+      metricsQuery: 'up{<<.LabelMatchers>>}'
+    
     # Request rate per second - using actual metric names
     - seriesQuery: 'download_requests_total'
       resources:
@@ -119,7 +130,7 @@ spec:
         - --metrics-relist-interval=30s
         - --config=/etc/adapter/config.yaml
         - --cert-dir=/tmp/cert
-        - --v=2
+        - --v=4
         ports:
         - containerPort: 6443
         volumeMounts:
