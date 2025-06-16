@@ -1,3 +1,4 @@
+# HPA using custom metrics from Prometheus
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -9,7 +10,7 @@ spec:
     kind: Deployment
     name: downloader-service
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 5
   metrics:
   # Scale based on request rate
   - type: Pods
