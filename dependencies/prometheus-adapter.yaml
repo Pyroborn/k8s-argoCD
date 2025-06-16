@@ -29,6 +29,30 @@ data:
       metricsQuery: 'sum(active_downloads{<<.LabelMatchers>>} + active_uploads{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
 
 ---
+# ServiceAccount for the adapter
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-adapter
+  namespace: microservices
+
+---
+# Minimal RBAC for authentication
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prometheus-adapter-auth
+  namespace: microservices
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+- kind: ServiceAccount
+  name: prometheus-adapter
+  namespace: microservices
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,12 +68,13 @@ spec:
       labels:
         app: prometheus-adapter
     spec:
+      serviceAccountName: prometheus-adapter
       containers:
       - name: prometheus-adapter
         image: k8s.gcr.io/prometheus-adapter/prometheus-adapter:v0.11.0
         args:
         - --secure-port=6443
-        - --prometheus-url=http://prometheus:9090/
+        - --prometheus-url=http://prometheus.monitoring.svc.cluster.local:9090/
         - --metrics-relist-interval=30s
         - --config=/etc/adapter/config.yaml
         - --cert-dir=/tmp/cert
