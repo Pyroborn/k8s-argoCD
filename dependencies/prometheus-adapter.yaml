@@ -6,7 +6,7 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # Request rate per second - fixed query syntax
+    # Request rate per second - using actual metric names
     - seriesQuery: 'download_requests_total'
       resources:
         overrides:
@@ -17,16 +17,16 @@ data:
         as: "downloader_requests_per_second"
       metricsQuery: 'sum(rate(download_requests_total{<<.LabelMatchers>>}[1m]) + rate(upload_requests_total{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)'
     
-    # Active operations - fixed query syntax
-    - seriesQuery: 'active_downloads'
+    # Active operations - using actual metric names
+    - seriesQuery: 'active_downloads_current'
       resources:
         overrides:
           namespace: {resource: "namespace"}
           pod: {resource: "pod"}
       name:
-        matches: "active_downloads"
+        matches: "active_downloads_current"
         as: "downloader_active_operations"
-      metricsQuery: 'sum(active_downloads{<<.LabelMatchers>>} + active_uploads{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+      metricsQuery: 'sum(active_downloads_current{<<.LabelMatchers>>} + active_uploads_current{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
 
 ---
 # ServiceAccount for the adapter
