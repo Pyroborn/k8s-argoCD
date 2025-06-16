@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: status-service
-        image: pyroborn/status-service:13
+        image: pyroborn/status-service:16
         imagePullPolicy: Always
         ports:
         - containerPort: 4001
