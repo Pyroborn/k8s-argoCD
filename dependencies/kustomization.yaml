@@ -5,3 +5,4 @@ resources:
   - mongodb.yaml
   - rabbitmq.yaml
   - user-data-pvc.yaml
+  - prometheus-adapter.yaml

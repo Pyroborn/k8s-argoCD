@@ -78,12 +78,72 @@ kind: Service
 metadata:
   name: downloader-service
   namespace: microservices
+  labels:
+    app: downloader-service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3004"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     app: downloader-service
   ports:
   - port: 3004
     targetPort: 3004
-    protocol: TCP
-    name: http ## not sure if this is needed
-  type: ClusterIP
+    name: http
+---
+# Simple HPA using custom metrics
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: downloader-service-hpa
+  namespace: microservices
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: downloader-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  # Scale based on request rate
+  - type: Pods
+    pods:
+      metric:
+        name: downloader_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "5"  # Scale up when > 5 req/sec per pod
+  
+  # Scale based on active operations
+  - type: Pods
+    pods:
+      metric:
+        name: downloader_active_operations
+      target:
+        type: AverageValue
+        averageValue: "3"  # Scale up when > 3 active operations per pod
+  
+  # Fallback CPU scaling
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      selectPolicy: Min

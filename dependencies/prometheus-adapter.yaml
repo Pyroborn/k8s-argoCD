@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adapter-config
+  namespace: default
+data:
+  config.yaml: |
+    rules:
+    # Request rate per second
+    - seriesQuery: 'rate(download_requests_total[1m]) + rate(upload_requests_total[1m])'
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+          pod: {resource: "pod"}
+      name:
+        matches: ".*"
+        as: "downloader_requests_per_second"
+      metricsQuery: 'sum(rate(download_requests_total{<<.LabelMatchers>>}[1m]) + rate(upload_requests_total{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)'
+    
+    # Active operations
+    - seriesQuery: 'active_downloads + active_uploads'
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+          pod: {resource: "pod"}
+      name:
+        matches: ".*"
+        as: "downloader_active_operations"
+      metricsQuery: 'sum(active_downloads{<<.LabelMatchers>>} + active_uploads{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-adapter
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-adapter
+  template:
+    metadata:
+      labels:
+        app: prometheus-adapter
+    spec:
+      containers:
+      - name: prometheus-adapter
+        image: k8s.gcr.io/prometheus-adapter/prometheus-adapter:v0.11.0
+        args:
+        - --secure-port=6443
+        - --logtostderr=true
+        - --prometheus-url=http://prometheus:9090/
+        - --metrics-relist-interval=30s
+        - --config=/etc/adapter/config.yaml
+        - --cert-dir=/tmp/cert
+        - --tls-cert-file=/tmp/cert/tls.crt
+        - --tls-private-key-file=/tmp/cert/tls.key
+        ports:
+        - containerPort: 6443
+        volumeMounts:
+        - mountPath: /etc/adapter/
+          name: config
+          readOnly: true
+        - mountPath: /tmp/cert
+          name: tmp-cert
+      volumes:
+      - name: config
+        configMap:
+          name: adapter-config
+      - name: tmp-cert
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-adapter
+  namespace: default
+spec:
+  ports:
+  - port: 443
+    targetPort: 6443
+  selector:
+    app: prometheus-adapter
+
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta1.custom.metrics.k8s.io
+spec:
+  service:
+    name: prometheus-adapter
+    namespace: default
+  group: custom.metrics.k8s.io
+  version: v1beta1
+  insecureSkipTLSVerify: true
+  groupPriorityMinimum: 100
+  versionPriority: 100 
