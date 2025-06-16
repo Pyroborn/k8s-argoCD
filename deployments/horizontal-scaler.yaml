@@ -1,4 +1,4 @@
-# Simple HPA using only CPU for testing
+# HPA using only custom metrics from downloader-service
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -10,26 +10,54 @@ spec:
     kind: Deployment
     name: downloader-service
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 5
   metrics:
-  # Only CPU scaling for now
-  - type: Resource
-    resource:
-      name: cpu
+  # Scale based on download request rate
+  - type: Pods
+    pods:
+      metric:
+        name: downloader_download_requests_rate
       target:
-        type: Utilization
-        averageUtilization: 50
+        type: AverageValue
+        averageValue: "3"  # Scale up when > 3 download req/sec per pod
+  
+  # Scale based on upload request rate  
+  - type: Pods
+    pods:
+      metric:
+        name: downloader_upload_requests_rate
+      target:
+        type: AverageValue
+        averageValue: "2"  # Scale up when > 2 upload req/sec per pod
+  
+  # Scale based on active downloads
+  - type: Pods
+    pods:
+      metric:
+        name: downloader_active_downloads
+      target:
+        type: AverageValue
+        averageValue: "2"  # Scale up when > 2 active downloads per pod
+  
+  # Scale based on active uploads
+  - type: Pods
+    pods:
+      metric:
+        name: downloader_active_uploads
+      target:
+        type: AverageValue
+        averageValue: "2"  # Scale up when > 2 active uploads per pod
   
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 60
+      stabilizationWindowSeconds: 30  # Faster scaling for file operations
       policies:
       - type: Percent
         value: 100
-        periodSeconds: 60
+        periodSeconds: 30
       selectPolicy: Max
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 180  # Conservative scale down
       policies:
       - type: Percent
         value: 50

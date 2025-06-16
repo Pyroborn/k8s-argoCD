@@ -6,18 +6,7 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # Basic CPU metric for testing
-    - seriesQuery: 'up'
-      resources:
-        overrides:
-          namespace: {resource: "namespace"}
-          pod: {resource: "pod"}
-      name:
-        matches: "up"
-        as: "test_metric"
-      metricsQuery: 'up{<<.LabelMatchers>>}'
-    
-    # Request rate per second - using actual metric names
+    # Download request rate per second
     - seriesQuery: 'download_requests_total'
       resources:
         overrides:
@@ -25,10 +14,21 @@ data:
           pod: {resource: "pod"}
       name:
         matches: "download_requests_total"
-        as: "downloader_requests_per_second"
-      metricsQuery: 'sum(rate(download_requests_total{<<.LabelMatchers>>}[1m]) + rate(upload_requests_total{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)'
+        as: "downloader_download_requests_rate"
+      metricsQuery: 'sum(rate(download_requests_total{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)'
     
-    # Active operations - using actual metric names
+    # Upload request rate per second
+    - seriesQuery: 'upload_requests_total'
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+          pod: {resource: "pod"}
+      name:
+        matches: "upload_requests_total"
+        as: "downloader_upload_requests_rate"
+      metricsQuery: 'sum(rate(upload_requests_total{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)'
+    
+    # Active downloads
     - seriesQuery: 'active_downloads_current'
       resources:
         overrides:
@@ -36,8 +36,19 @@ data:
           pod: {resource: "pod"}
       name:
         matches: "active_downloads_current"
-        as: "downloader_active_operations"
-      metricsQuery: 'sum(active_downloads_current{<<.LabelMatchers>>} + active_uploads_current{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+        as: "downloader_active_downloads"
+      metricsQuery: 'sum(active_downloads_current{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+    
+    # Active uploads
+    - seriesQuery: 'active_uploads_current'
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+          pod: {resource: "pod"}
+      name:
+        matches: "active_uploads_current"
+        as: "downloader_active_uploads"
+      metricsQuery: 'sum(active_uploads_current{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
 
 ---
 # ServiceAccount for the adapter
@@ -130,7 +141,7 @@ spec:
         - --metrics-relist-interval=30s
         - --config=/etc/adapter/config.yaml
         - --cert-dir=/tmp/cert
-        - --v=4
+        - --v=2
         ports:
         - containerPort: 6443
         volumeMounts:
