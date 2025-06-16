@@ -6,25 +6,25 @@ metadata:
 data:
   config.yaml: |
     rules:
-    # Request rate per second
-    - seriesQuery: 'rate(download_requests_total[1m]) + rate(upload_requests_total[1m])'
+    # Request rate per second - fixed query syntax
+    - seriesQuery: 'download_requests_total'
       resources:
         overrides:
           namespace: {resource: "namespace"}
           pod: {resource: "pod"}
       name:
-        matches: ".*"
+        matches: "download_requests_total"
         as: "downloader_requests_per_second"
       metricsQuery: 'sum(rate(download_requests_total{<<.LabelMatchers>>}[1m]) + rate(upload_requests_total{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)'
     
-    # Active operations
-    - seriesQuery: 'active_downloads + active_uploads'
+    # Active operations - fixed query syntax
+    - seriesQuery: 'active_downloads'
       resources:
         overrides:
           namespace: {resource: "namespace"}
           pod: {resource: "pod"}
       name:
-        matches: ".*"
+        matches: "active_downloads"
         as: "downloader_active_operations"
       metricsQuery: 'sum(active_downloads{<<.LabelMatchers>>} + active_uploads{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
 
@@ -33,6 +33,47 @@ data:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  name: prometheus-adapter
+  namespace: microservices
+
+---
+# ClusterRole with necessary permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-adapter
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/stats
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-adapter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-adapter
+subjects:
+- kind: ServiceAccount
   name: prometheus-adapter
   namespace: microservices
 
