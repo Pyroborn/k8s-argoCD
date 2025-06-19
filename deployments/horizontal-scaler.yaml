@@ -22,13 +22,13 @@ spec:
         averageValue: "3"  # Scale up when > 3 download req/sec per pod
   
   # Scale based on upload request rate  
-  - type: Pods
-    pods:
-      metric:
-        name: downloader_upload_requests_rate
-      target:
-        type: AverageValue
-        averageValue: "2"  # Scale up when > 2 upload req/sec per pod
+  #  - type: Pods
+  #  pods:
+  #    metric:
+  #      name: downloader_upload_requests_rate
+  #    target:
+  #      type: AverageValue
+  #      averageValue: "2"  # Scale up when > 2 upload req/sec per pod
   
   # Scale based on active downloads
   - type: Pods
