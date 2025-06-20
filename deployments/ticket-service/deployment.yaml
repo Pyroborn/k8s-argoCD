@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ticket-service
-        image: pyroborn/ticket-service:35
+        image: pyroborn/ticket-service:36
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3005
